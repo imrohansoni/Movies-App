@@ -58,7 +58,7 @@ body {
 
 .search:focus {
   outline: 0;
-  border: 4px solid rgb(119, 0, 255);
+  border: 4px solid #7700ff;
 }
 
 .add_to_watch_list:focus {
@@ -138,15 +138,15 @@ img {
   border-radius: 5px;
 }
 
-.movie.best .rating {
+.rating.best {
   color: rgb(0, 207, 0);
 }
 
-.movie.good .rating {
+.rating.good {
   color: orange;
 }
 
-.movie.bad .rating {
+.rating.bad {
   color: orangered;
 }
 
@@ -171,6 +171,8 @@ img {
 }
 
 .overview {
+  padding-right: 20px;
+  /* text-align: justify; */
   height: 200px;
   overflow-y: scroll;
 }
