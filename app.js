@@ -17,13 +17,13 @@ const getMovies = async function () {
   const data = await movie.json();
   console.log(data);
 
-  displayMovies(data);
+  displayMovies(data.results);
 };
 
 const displayMovies = function (movies) {
   container.textContent = ``;
 
-  movies.results.forEach((movie) => {
+  movies.forEach((movie) => {
     const genreName = genres.find((i) => i.id === movie.genre_ids[0]).name;
     const rating = movie.vote_average;
     const ratingColor =
@@ -68,7 +68,10 @@ const displayMovies = function (movies) {
     `;
 
     container.insertAdjacentHTML('beforeEnd', markup);
+    console.log('movie');
   });
+
+  console.log(movies);
 };
 
 getMovies();
@@ -76,9 +79,19 @@ getMovies();
 const searchMovies = function () {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const search_id = search.value;
+    const movie_name = search.value;
 
-    console.log(search.value);
+    try {
+      const movie = await fetch(
+        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${movie_name}`
+      );
+
+      const data = await movie.json();
+      if (data.results.length < 1) return;
+      displayMovies(data.results);
+    } catch {
+      console.log('something went wrong');
+    }
   });
 };
 
@@ -102,6 +115,8 @@ const addToWatchLetter = function () {
 addToWatchLetter();
 
 const getWatchListedMovies = async function () {
+  const watchListedMovies = [];
+
   const movies = localStorage.getItem('watchList');
 
   if (movies.split(',').length < 1) return;
@@ -111,11 +126,19 @@ const getWatchListedMovies = async function () {
       `https://api.themoviedb.org/3/movie/${search_id}?api_key=${API_KEY}&language=en-US`
     );
 
-    const d = await movie.json();
-    console.log(d);
+    watchListedMovies.push(await movie.json());
   });
+
+  return watchListedMovies;
 };
 
 const watchListButton = document.querySelector('.watch_list_btn');
+
+watchListButton.addEventListener('click', async function () {
+  //   console.log(await getWatchListedMovies());
+  const data = await getWatchListedMovies();
+  displayMovies(data);
+  console.log('display the movies');
+});
 
 getWatchListedMovies();
