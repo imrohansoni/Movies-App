@@ -4,8 +4,8 @@ import { genres } from './genre.js';
 const container = document.querySelector('.container');
 const form = document.querySelector('.form');
 const search = document.querySelector('.search');
-const addTowatchListButton = document.querySelector('.add_to_watch_list');
-const watchList = document.querySelector('.watch_list_btn');
+
+const watchList = [];
 
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w1280';
 
@@ -15,6 +15,8 @@ const getMovies = async function () {
   );
 
   const data = await movie.json();
+  console.log(data);
+
   displayMovies(data);
 };
 
@@ -27,7 +29,7 @@ const displayMovies = function (movies) {
     const ratingColor =
       rating >= 7.5 ? 'best' : rating >= 6 && rating < 7.5 ? 'good' : 'bad';
     const markup = `
-     <div class="movie best">
+     <div class="movie best" data-movie_id="${movie.id}">
             <div class="poster">
                 <img src="${IMAGE_URL}${movie.poster_path}" alt="">
                 <div class="poster_details">
@@ -70,3 +72,50 @@ const displayMovies = function (movies) {
 };
 
 getMovies();
+
+const searchMovies = function () {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const search_id = search.value;
+
+    console.log(search.value);
+  });
+};
+
+searchMovies();
+
+const addToWatchLetter = function () {
+  const addToWatchLetterButton =
+    document.querySelectorAll('.add_to_watch_list');
+
+  container.addEventListener('click', function (e) {
+    if (e.target.closest('.add_to_watch_list')) {
+      console.log('watch list button');
+      const movieCard = e.target.closest('.movie');
+      const id = movieCard.dataset.movie_id;
+      watchList.push(id);
+      localStorage.setItem('watchList', watchList);
+    }
+  });
+};
+
+addToWatchLetter();
+
+const getWatchListedMovies = async function () {
+  const movies = localStorage.getItem('watchList');
+
+  if (movies.split(',').length < 1) return;
+
+  movies.split(',').forEach(async (search_id) => {
+    const movie = await fetch(
+      `https://api.themoviedb.org/3/movie/${search_id}?api_key=${API_KEY}&language=en-US`
+    );
+
+    const d = await movie.json();
+    console.log(d);
+  });
+};
+
+const watchListButton = document.querySelector('.watch_list_btn');
+
+getWatchListedMovies();
