@@ -6,21 +6,32 @@ const form = document.querySelector('.form');
 const search = document.querySelector('.search');
 
 const watchList = [];
+const moviesList = [];
 
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w1280';
 
-const getMovies = async function () {
-  const movie = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=${API_KEY}&page=1`
-  );
+const getMovies = async function (query, movie_name) {
+  let movie;
+  try {
+    movie = await fetch(
+      `https://api.themoviedb.org/3/${query}/movie?${
+        query === 'discover' ? 'sort_by=popularity.desc' : `query=${movie_name}`
+      }&api_key=${API_KEY}&page=1`
+    );
+  } catch (err) {
+    console.log(err);
+  }
 
   const data = await movie.json();
-  console.log(data);
 
-  displayMovies(data.results);
+  displayMovies(data.results, false);
+  console.log(data.results);
+
+  moviesList.push(...data.results);
+  console.log(moviesList);
 };
 
-const displayMovies = function (movies) {
+const displayMovies = function (movies, byId) {
   container.textContent = ``;
 
   movies.forEach((movie) => {
@@ -29,12 +40,12 @@ const displayMovies = function (movies) {
     const ratingColor =
       rating >= 7.5 ? 'best' : rating >= 6 && rating < 7.5 ? 'good' : 'bad';
     const markup = `
-     <div class="movie best" data-movie_id="${movie.id}">
+     <div class="movie liked" data-movie_id="${movie.id}">
             <div class="poster">
                 <img src="${IMAGE_URL}${movie.poster_path}" alt="">
                 <div class="poster_details">
                     <span class="title">
-                        ${movie.original_title}
+                        ${movie.original_title || 'no title'}
                     </span>
                     <div class="rating_genre">
                         <span class="rating ${ratingColor}">
@@ -53,7 +64,7 @@ const displayMovies = function (movies) {
                          ${rating}
                     </span>
                     <span class="genre">${genreName}</span>
-                    <button class="add_to_watch_list active"><i class="far fa-heart"></i></button>
+                    <button class="add_to_watch_list"><i class="far fa-heart"></i></button>
                 </div>
                 <span class="release_date">
                     release date :<span class="release">
@@ -68,30 +79,17 @@ const displayMovies = function (movies) {
     `;
 
     container.insertAdjacentHTML('beforeEnd', markup);
-    console.log('movie');
   });
-
-  console.log(movies);
 };
 
-getMovies();
+getMovies('discover');
 
 const searchMovies = function () {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     const movie_name = search.value;
 
-    try {
-      const movie = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${movie_name}`
-      );
-
-      const data = await movie.json();
-      if (data.results.length < 1) return;
-      displayMovies(data.results);
-    } catch {
-      console.log('something went wrong');
-    }
+    getMovies('search', movie_name);
   });
 };
 
@@ -103,42 +101,23 @@ const addToWatchLetter = function () {
 
   container.addEventListener('click', function (e) {
     if (e.target.closest('.add_to_watch_list')) {
-      console.log('watch list button');
       const movieCard = e.target.closest('.movie');
       const id = movieCard.dataset.movie_id;
-      watchList.push(id);
-      localStorage.setItem('watchList', watchList);
+
+      const movie = moviesList.find((m) => m.id === +id);
+
+      watchList.push(movie);
     }
   });
 };
 
 addToWatchLetter();
 
-const getWatchListedMovies = async function () {
-  const watchListedMovies = [];
-
-  const movies = localStorage.getItem('watchList');
-
-  if (movies.split(',').length < 1) return;
-
-  movies.split(',').forEach(async (search_id) => {
-    const movie = await fetch(
-      `https://api.themoviedb.org/3/movie/${search_id}?api_key=${API_KEY}&language=en-US`
-    );
-
-    watchListedMovies.push(await movie.json());
+const displayWatchList = function () {
+  const watchListButton = document.querySelector('.watch_list_btn');
+  watchListButton.addEventListener('click', function () {
+    displayMovies(watchList);
   });
-
-  return watchListedMovies;
 };
 
-const watchListButton = document.querySelector('.watch_list_btn');
-
-watchListButton.addEventListener('click', async function () {
-  //   console.log(await getWatchListedMovies());
-  const data = await getWatchListedMovies();
-  displayMovies(data);
-  console.log('display the movies');
-});
-
-getWatchListedMovies();
+displayWatchList();
