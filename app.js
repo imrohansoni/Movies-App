@@ -10,6 +10,15 @@ const moviesList = [];
 
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w1280';
 
+const init = function () {
+  getWatchList();
+  getMovies('discover');
+  addToWatchLetter();
+  displayHome();
+  searchMovies();
+  displayWatchList();
+};
+
 const getMovies = async function (query, movie_name) {
   let movie;
   try {
@@ -23,12 +32,8 @@ const getMovies = async function (query, movie_name) {
   }
 
   const data = await movie.json();
-
   displayMovies(data.results, false);
-  console.log(data.results);
-
   moviesList.push(...data.results);
-  console.log(moviesList);
 };
 
 const displayMovies = function (movies, byId) {
@@ -84,8 +89,6 @@ const displayMovies = function (movies, byId) {
   });
 };
 
-getMovies('discover');
-
 const searchMovies = function () {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -95,12 +98,7 @@ const searchMovies = function () {
   });
 };
 
-searchMovies();
-
 const addToWatchLetter = function () {
-  const addToWatchLetterButton =
-    document.querySelectorAll('.add_to_watch_list');
-
   container.addEventListener('click', function (e) {
     if (e.target.closest('.add_to_watch_list')) {
       const movieCard = e.target.closest('.movie');
@@ -111,17 +109,15 @@ const addToWatchLetter = function () {
       if (watchListIndex > -1) {
         watchList.splice(watchListIndex, 1);
         movieCard.classList.remove('liked');
-        return;
+      } else {
+        const movie = moviesList.find((m) => m.id === +id);
+        watchList.push(movie);
+        movieCard.classList.add('liked');
       }
-
-      const movie = moviesList.find((m) => m.id === +id);
-      watchList.push(movie);
-      movieCard.classList.add('liked');
+      localStorage.setItem('watchList', JSON.stringify(watchList));
     }
   });
 };
-
-addToWatchLetter();
 
 const displayWatchList = function () {
   const watchListButton = document.querySelector('.watch_list_btn');
@@ -138,6 +134,9 @@ const displayHome = function () {
   });
 };
 
-displayHome();
+const getWatchList = function () {
+  const watchListedMovies = localStorage.getItem('watchList');
+  watchList.push(...JSON.parse(watchListedMovies));
+};
 
-displayWatchList();
+init();
