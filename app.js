@@ -106,9 +106,17 @@ const addToWatchLetter = function () {
       const movieCard = e.target.closest('.movie');
       const id = movieCard.dataset.movie_id;
 
-      const movie = moviesList.find((m) => m.id === +id);
+      const watchListIndex = watchList.findIndex((mov) => mov.id === +id);
 
+      if (watchListIndex > -1) {
+        watchList.splice(watchListIndex, 1);
+        movieCard.classList.remove('liked');
+        return;
+      }
+
+      const movie = moviesList.find((m) => m.id === +id);
       watchList.push(movie);
+      movieCard.classList.add('liked');
     }
   });
 };
@@ -121,5 +129,15 @@ const displayWatchList = function () {
     displayMovies(watchList);
   });
 };
+
+const displayHome = function () {
+  const homeButton = document.querySelector('.home_btn');
+
+  homeButton.addEventListener('click', function () {
+    getMovies('discover');
+  });
+};
+
+displayHome();
 
 displayWatchList();

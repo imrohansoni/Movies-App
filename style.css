@@ -21,7 +21,18 @@ body {
   justify-content: space-between;
 }
 
-.watch_list_btn {
+.form {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.btn_container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.btn_container button {
   border: 0;
   font-size: inherit;
   font-family: inherit;
@@ -30,6 +41,13 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+}
+
+.btn_container .home_btn {
+  background-color: blue;
 }
 
 .add_to_watch_list {
@@ -174,7 +192,6 @@ img {
 
 .overview {
   padding-right: 20px;
-  /* text-align: justify; */
   height: 200px;
   overflow-y: scroll;
 }
