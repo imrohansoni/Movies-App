@@ -40,7 +40,9 @@ const displayMovies = function (movies, byId) {
     const ratingColor =
       rating >= 7.5 ? 'best' : rating >= 6 && rating < 7.5 ? 'good' : 'bad';
     const markup = `
-     <div class="movie liked" data-movie_id="${movie.id}">
+     <div class="movie ${
+       watchList.findIndex((m) => m.id === movie.id) > -1 ? 'liked' : ''
+     }" data-movie_id="${movie.id}">
             <div class="poster">
                 <img src="${IMAGE_URL}${movie.poster_path}" alt="">
                 <div class="poster_details">
