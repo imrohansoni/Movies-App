@@ -4,6 +4,8 @@ import { genres } from './genre.js';
 const container = document.querySelector('.container');
 const form = document.querySelector('.form');
 const search = document.querySelector('.search');
+const watchListButton = document.querySelector('.watch_list_btn');
+const homeButton = document.querySelector('.home_btn');
 
 const watchList = [];
 const moviesList = [];
@@ -40,6 +42,7 @@ const displayMovies = function (movies, byId) {
   container.textContent = ``;
 
   movies.forEach((movie) => {
+    if (!movie) return;
     const genreName = genres.find((i) => i.id === movie.genre_ids[0]).name;
     const rating = movie.vote_average;
     const ratingColor =
@@ -120,15 +123,12 @@ const addToWatchLetter = function () {
 };
 
 const displayWatchList = function () {
-  const watchListButton = document.querySelector('.watch_list_btn');
   watchListButton.addEventListener('click', function () {
     displayMovies(watchList);
   });
 };
 
 const displayHome = function () {
-  const homeButton = document.querySelector('.home_btn');
-
   homeButton.addEventListener('click', function () {
     getMovies('discover');
   });
@@ -136,6 +136,7 @@ const displayHome = function () {
 
 const getWatchList = function () {
   const watchListedMovies = localStorage.getItem('watchList');
+  if (!watchListedMovies) return;
   watchList.push(...JSON.parse(watchListedMovies));
 };
 
