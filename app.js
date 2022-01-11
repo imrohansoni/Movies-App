@@ -50,7 +50,7 @@ const displayMovies = function (movies, byId) {
     const markup = `
      <div class="movie ${
        watchList.findIndex((m) => m.id === movie.id) > -1 ? 'liked' : ''
-     }" data-movie_id="${movie.id}">
+     }" data-movie_id="${movie.id ? movie.id : ''}">
             <div class="poster">
                 <img src="${IMAGE_URL}${movie.poster_path}" alt="">
                 <div class="poster_details">
@@ -106,6 +106,7 @@ const addToWatchLetter = function () {
     if (e.target.closest('.add_to_watch_list')) {
       const movieCard = e.target.closest('.movie');
       const id = movieCard.dataset.movie_id;
+      if (!id) return;
 
       const watchListIndex = watchList.findIndex((mov) => mov.id === +id);
 
