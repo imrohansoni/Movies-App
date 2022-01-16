@@ -43,7 +43,12 @@ const displayMovies = function (movies, byId) {
 
   movies.forEach((movie) => {
     if (!movie) return;
-    const genreName = genres.find((i) => i.id === movie.genre_ids[0]).name;
+
+    const genreName =
+      !movie.genre_ids.length < 1
+        ? genres.find((i) => i.id === movie.genre_ids[0]).name
+        : '';
+
     const rating = movie.vote_average;
     const ratingColor =
       rating >= 7.5 ? 'best' : rating >= 6 && rating < 7.5 ? 'good' : 'bad';
@@ -61,7 +66,11 @@ const displayMovies = function (movies, byId) {
                         <span class="rating ${ratingColor}">
                             ${rating}
                         </span>
-                        <span class="genre">${genreName}</span>
+                        ${
+                          genreName
+                            ? `<span class="genre">${genreName}</span>`
+                            : ''
+                        }
                     </div>
                 </div>
             </div>
@@ -73,7 +82,9 @@ const displayMovies = function (movies, byId) {
                     <span class="rating ${ratingColor}">
                          ${rating}
                     </span>
-                    <span class="genre">${genreName}</span>
+                    ${
+                      genreName ? `<span class="genre">${genreName}</span>` : ''
+                    }
                     <button class="add_to_watch_list"><i class="far fa-heart"></i></button>
                 </div>
                 <span class="release_date">
